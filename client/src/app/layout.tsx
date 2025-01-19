@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../styles/globals.css";
 import 'primereact/resources/themes/saga-blue/theme.css';  // Tema de PrimeReact
 import 'primereact/resources/primereact.min.css';          // Estilos principales de PrimeReac
 import 'primeicons/primeicons.css';       

@@ -1,0 +1,11 @@
+.custom-blue-bg {
+  background-color: #0267ED;
+}
+
+.custom-blue-text {
+  color: #0267ED;
+}
+
+.rounded-button {
+  border-radius: 12px; /* Ajusta este valor según tus necesidades */
+}

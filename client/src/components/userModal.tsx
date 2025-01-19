@@ -57,7 +57,7 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
 
   return (
     <Dialog
-      header={userData ? 'Editar Usuario' : 'Nuevo Usuario'}
+      header={userData ? 'Editar usuario' : 'Nuevo usuario'}
       visible={visible}
       onHide={onHide}
       style={{ width: '40vw' }}
@@ -109,9 +109,9 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
           />
         </div>
       </div>
-      <div className="p-dialog-footer">
-        <Button label="Cancelar" icon="pi pi-times" onClick={onHide} className="p-button-text" />
-        <Button label="Guardar" icon="pi pi-check" onClick={handleConfirm} autoFocus />
+      <div className="p-dialog-footer mt-4">
+        <Button label="Confirmar" icon="pi pi-check" onClick={handleConfirm} className='custom-blue-bg rounded-button' autoFocus />
+        <Button label="Cancelar" icon="pi pi-times" onClick={onHide} className="p-button-text custom-blue-text rounded-button" />
       </div>
     </Dialog>
   );
