@@ -1,12 +1,6 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-
-interface User {
-  id: string;
-  usuario: string;
-  estado: 'ACTIVO' | 'DESACTIVO';
-  sector: number;
-}
+import { User } from '@/types/user';
 
 interface UserListProps {
   users: User[];
