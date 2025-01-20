@@ -2,13 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { createUser, fetchAllUsers, updateUser, fetchUsersBySector } from '@/services/userService';
 import UserModal from '@/components/userModal';
 import { User } from '@/types/user';
 import Header from '@/components/header';
+import UserList from '@/components/userList';
 
 const UsuariosPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -114,12 +113,41 @@ const UsuariosPage: React.FC = () => {
     }
   };
 
+  const handleDeactivateUser = async (user: User) => {
+      try {
+        const updatedUser: User = { ...user, estado: 'INACTIVO' };
+        await updateUser(user.id, updatedUser);
+        const updatedUsers = users.map((u) => (u.id === user.id ? updatedUser : u));
+        setUsers(updatedUsers);
+        setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
+        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario desactivado correctamente', life: 3000 });
+      } catch (error) {
+        console.error('Error al desactivar el usuario:', error);
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo desactivar el usuario',
+          life: 3000,
+        });
+      }
+    };
 
   const usuarioTemplate = (rowData: User) => {
     return (
       <Button className="p-button-link custom-blue-text underline" onClick={() => openModal(rowData)}>
         {rowData.usuario}
       </Button>
+    );
+  };
+
+  const actionTemplate = (rowData: User) => {
+    return (
+      <Button
+        icon="pi pi-trash"
+        className="p-button-rounded p-button-danger p-button-text"
+        onClick={() => handleDeactivateUser(rowData)}
+        disabled={rowData.estado !== 'ACTIVO'}
+      />
     );
   };
 
@@ -167,19 +195,8 @@ const UsuariosPage: React.FC = () => {
 
       </div>
 
-      {/* Tabla */}
-      <DataTable
-        value={filteredUsers}
-        paginator
-        rows={5}
-        responsiveLayout="scroll"
-        emptyMessage="No se encontraron usuarios."
-      >
-        <Column field="id" header="ID" />
-        <Column field="usuario" header="Usuario" body={usuarioTemplate} />
-        <Column field="estado" header="Estado" />
-        <Column field="sector" header="Sector" />
-      </DataTable>
+       {/* Tabla */}
+       <UserList users={filteredUsers} usuarioTemplate={usuarioTemplate} actionTemplate={actionTemplate} />
 
       {/* Modal */}
       <UserModal
