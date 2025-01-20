@@ -8,6 +8,7 @@ import UserModal from '@/components/userModal';
 import { User } from '@/types/user';
 import Header from '@/components/header';
 import UserList from '@/components/userList';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const UsuariosPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -132,6 +133,15 @@ const UsuariosPage: React.FC = () => {
       }
     };
 
+    const confirmDeactivateUser = (user: User) => {
+      confirmDialog({
+        message: '¿Está seguro que desea dar de baja este usuario?',
+        header: 'Confirmación',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => handleDeactivateUser(user),
+      });
+    };
+
   const usuarioTemplate = (rowData: User) => {
     return (
       <Button className="p-button-link custom-blue-text underline" onClick={() => openModal(rowData)}>
@@ -145,7 +155,7 @@ const UsuariosPage: React.FC = () => {
       <Button
         icon="pi pi-trash"
         className="p-button-rounded p-button-danger p-button-text"
-        onClick={() => handleDeactivateUser(rowData)}
+        onClick={() => confirmDeactivateUser(rowData)}
         disabled={rowData.estado !== 'ACTIVO'}
       />
     );
@@ -159,6 +169,7 @@ const UsuariosPage: React.FC = () => {
     <div className="p-4">
       {/* Toast para notificaciones */}
       <Toast ref={toast} />
+      <ConfirmDialog />
       <Header />
       <div className='flex justify-content-between align-items-center'>
         {/* Título alineado a la izquierda */}
