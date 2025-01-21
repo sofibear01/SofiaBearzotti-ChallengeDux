@@ -11,7 +11,7 @@ import UserList from '@/components/userList';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { LIMIT } from '@/config/config';
-import { Paginator } from 'primereact/paginator';
+//import { Paginator } from 'primereact/paginator';
 //import debounce from 'lodash.debounce';
 
 const UsuariosPage: React.FC = () => {
@@ -289,14 +289,14 @@ const UsuariosPage: React.FC = () => {
       />
 
       {/* Paginación */}
-      <Paginator
+      {/* <Paginator
         first={(currentPage - 1) * pageSize}
         rows={pageSize}
         totalRecords={totalRecords}
         onPageChange={onPageChange}
         template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
         rowsPerPageOptions={[10, 20, 50]}
-      />
+      /> */}
 
       {/* Modal */}
       <UserModal
