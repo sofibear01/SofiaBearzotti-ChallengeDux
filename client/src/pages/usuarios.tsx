@@ -60,43 +60,71 @@ const UsuariosPage: React.FC = () => {
 
   const handleUserSubmit = async (user: User) => {
     try {
-      // Validar que todos los campos estén completos
-      if (!user.id || !user.usuario || !user.estado || user.sector === null) {
-        throw new Error('Todos los campos deben estar completos.');
-      }
-
-      if (selectedUser) {
-        // Editar usuario existente
-        const updatedUser = await updateUser(user.id, user);
-        const updatedUsers = users.map((u) => (u.id === selectedUser.id ? updatedUser : u));
-        setUsers(updatedUsers);
-        setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
-        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado correctamente', life: 3000 });
-
-      } else {
-        // Validar que el ID sea único entre todos los usuarios
-        const allUsers = await fetchAllUsers(); // Traer todos los usuarios para verificar el ID
-        const idExists = allUsers.some((u) => u.id === user.id);
-
-        if (idExists && !selectedUser) {
+      // Obtener todos los usuarios
+      const allUsers = await fetchAllUsers();
+  
+      // Filtrar usuarios con datos incompletos
+      const validUsers = allUsers.filter(
+        (u) => u.sector !== null && u.usuario !== undefined && u.id !== undefined
+      );
+  
+      if (!selectedUser) {
+        // Validar que el ID sea único al crear
+        const idExists = validUsers.some((u) => u.id === user.id);
+        if (idExists) {
           toast.current?.show({
             severity: 'error',
             summary: 'Error',
             detail: 'El ID del usuario ya existe. Por favor, elige un ID único.',
             life: 4000,
           });
-          return; // Salir de la función
+          return;
         }
-
-        // Agregar nuevo usuario
+  
+        // Validar que el nombre de usuario sea único al crear
+        const nameExists = validUsers.some(
+          (u) => u.usuario.toLowerCase() === user.usuario.toLowerCase()
+        );
+        if (nameExists) {
+          toast.current?.show({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'El nombre de usuario ya existe. Por favor, elige un nombre único.',
+            life: 4000,
+          });
+          return;
+        }
+  
+        // Crear el usuario
         const addedUser = await createUser(user);
         const updatedUsers = [addedUser, ...users];
         setUsers(updatedUsers);
         setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
         toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });
+      } else {
+        // Validar que el nombre de usuario sea único al editar
+        const nameExists = validUsers.some(
+          (u) => u.usuario.toLowerCase() === user.usuario.toLowerCase() && u.id !== user.id
+        );
+        if (nameExists) {
+          toast.current?.show({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'El nombre de usuario ya existe. Por favor, elige un nombre único.',
+            life: 4000,
+          });
+          return;
+        }
+  
+        // Actualizar el usuario
+        const updatedUser = await updateUser(user.id, user);
+        const updatedUsers = users.map((u) => (u.id === selectedUser.id ? updatedUser : u));
+        setUsers(updatedUsers);
+        setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
+        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado correctamente', life: 3000 });
       }
-
-      closeModal(); // Cerrar el modal
+  
+      closeModal();
     } catch (error) {
       console.error('Error al guardar el usuario:', error);
       if (error instanceof Error) {
@@ -116,6 +144,7 @@ const UsuariosPage: React.FC = () => {
       }
     }
   };
+  
 
   const handleDeactivateUser = async (user: User) => {
     try {
@@ -223,6 +252,8 @@ const UsuariosPage: React.FC = () => {
         onHide={closeModal}
         onSubmit={handleUserSubmit}
         userData={selectedUser}
+        toastRef={toast}
+
       />
     </div>
   );

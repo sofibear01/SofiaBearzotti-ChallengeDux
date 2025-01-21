@@ -4,15 +4,17 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { User } from '@/types/user';
+import { Toast } from 'primereact/toast';
 
 interface UserModalProps {
   visible: boolean;
   onHide: () => void;
   onSubmit: (user: User) => void;
   userData?: User | null; // Datos del usuario en caso de edición
+  toastRef: React.RefObject<Toast | null>;
 }
 
-const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userData }) => {
+const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userData, toastRef }) => {
   const [id, setId] = useState('');
   const [usuario, setUsuario] = useState('');
   const [estado, setEstado] = useState<'ACTIVO' | 'INACTIVO' | null>(null);
@@ -40,11 +42,16 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
   }, [userData]);
 
   const handleConfirm = () => {
-    // Validar que todos los campos estén completos
-    if (!id || !usuario || !estado || sector === null) {
-      alert('Todos los campos deben estar completos.');
-      return;
-    }
+     // Validar que todos los campos estén completos
+  if (!id || !usuario || !estado || sector === null) {
+    toastRef.current?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Todos los campos deben estar completos.',
+      life: 3000,
+    });
+    return;
+  }
 
     onSubmit({
       id,
