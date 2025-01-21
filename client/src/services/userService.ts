@@ -1,4 +1,4 @@
-import { API_URL, SECTOR } from '../config/config';
+import { API_URL, LIMIT, SECTOR } from '../config/config';
 import { User } from '@/types/user';  
 
 /**
@@ -19,6 +19,46 @@ export async function fetchUsersBySector(): Promise<User[]> {
 
   return response.json();
 }
+
+/**
+ * Obtiene los usuarios de la API con paginado.
+ * @param page Número de la página.
+ * @returns Un array de usuarios.
+ */
+/**
+ * Obtiene los usuarios de la API con paginado.
+ * @param page Número de la página.
+ * @returns Un array de usuarios.
+ */
+export async function fetchUsersByPage(page: number): Promise<{ users: User[], totalRecords: number }> {
+  const params = new URLSearchParams({
+    sector: SECTOR.toString(),
+    _limit: LIMIT.toString(),
+    _page: page.toString(),
+  });
+
+  console.log("entra a la API");
+  console.log("parametros: ", params.toString());
+
+  const response = await fetch(`${API_URL}?${params.toString()}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  console.log(response);
+
+  if (!response.ok) {
+    throw new Error('Error al obtener los usuarios');
+  }
+
+  const totalRecords = Number(response.headers.get('X-Total-Count')); // Asegúrate de que el backend envíe este header
+  const users = await response.json();
+  console.log("totalRecords: ", totalRecords);
+  console.log("users: ", users);
+
+  return { users, totalRecords };
+}
+
+
 
 /**
  * Obtiene todos los usuarios de la API.

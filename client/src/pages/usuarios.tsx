@@ -3,13 +3,16 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
-import { createUser, fetchAllUsers, updateUser, fetchUsersBySector } from '@/services/userService';
+import { createUser, fetchAllUsers, updateUser, fetchUsersByPage } from '@/services/userService';
 import UserModal from '@/components/userModal';
 import { User } from '@/types/user';
 import Header from '@/components/header';
 import UserList from '@/components/userList';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { LIMIT } from '@/config/config';
+import { Paginator } from 'primereact/paginator';
+//import debounce from 'lodash.debounce';
 
 const UsuariosPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -21,6 +24,11 @@ const UsuariosPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null); // Usuario seleccionado
   const toast = useRef<Toast>(null);
 
+  //para manejar la paginacion
+  const [totalRecords, setTotalRecords] = useState<number>(0); // Total de usuarios
+  const [currentPage, setCurrentPage] = useState<number>(1); // Página actual
+  const pageSize = LIMIT // Número de usuarios por página
+
   const estadoOptions = [
     { label: 'ACTIVO', value: 'ACTIVO' },
     { label: 'INACTIVO', value: 'INACTIVO' },
@@ -28,24 +36,30 @@ const UsuariosPage: React.FC = () => {
 
   useEffect(() => {
     async function loadUsers() {
-      const data = await fetchUsersBySector(); // Filtrar por sector 7000
-      const reversedData = data.reverse(); // Invierte el orden de los usuarios
-      setUsers(reversedData);
-      setFilteredUsers(reversedData);
-      setLoading(false);
+      setLoading(true);
+      try {
+        const { users, totalRecords } = await fetchUsersByPage(currentPage);
+        setUsers(users);
+        setFilteredUsers(users); // Usa los datos paginados
+        setTotalRecords(totalRecords);
+      } catch (error) {
+        console.error('Error al cargar los usuarios:', error);
+      } finally {
+        setLoading(false);
+      }
     }
+  
     loadUsers();
-  }, []);
-
+  }, [currentPage]);
 
   useEffect(() => {
-    const filter = users.filter(
+    // Filtrar los usuarios en el frontend
+    const filtered = users.filter(
       (user) =>
         user.usuario.toLowerCase().includes(search.toLowerCase()) &&
         (!estado || user.estado === estado)
-    )
-    //.reverse(); // Invierte el orden de los usuarios
-    setFilteredUsers(filter);
+    );
+    setFilteredUsers(filtered);
   }, [search, estado, users]);
 
   const openModal = (user: User | null) => {
@@ -193,6 +207,16 @@ const UsuariosPage: React.FC = () => {
     );
   };
 
+  const onPageChange = (e: { first: number, rows: number, page: number, pageCount: number }) => {
+    setCurrentPage(e.page);
+  };
+
+  // const debouncedSearch = useCallback(
+  //   debounce((searchTerm: string) => {
+  //     setSearch(searchTerm);
+  //   }, 300),
+  //   []
+  // );
 
   if (loading) {
     return (
@@ -254,7 +278,25 @@ const UsuariosPage: React.FC = () => {
       </div>
 
       {/* Tabla */}
-      <UserList users={filteredUsers} usuarioTemplate={usuarioTemplate} actionTemplate={actionTemplate} />
+      <UserList
+        users={filteredUsers} // Usuarios filtrados para mostrar
+        usuarioTemplate={usuarioTemplate} // Template para mostrar el nombre
+        actionTemplate={actionTemplate} // Template para las acciones
+        totalRecords={totalRecords} // Total de usuarios (para la paginación)
+        currentPage={currentPage} // Página actual
+        pageSize={pageSize} // Número de usuarios por página
+        onPageChange={onPageChange} // Manejar el cambio de página
+      />
+
+      {/* Paginación */}
+      <Paginator
+        first={(currentPage - 1) * pageSize}
+        rows={pageSize}
+        totalRecords={totalRecords}
+        onPageChange={onPageChange}
+        template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+        rowsPerPageOptions={[10, 20, 50]}
+      />
 
       {/* Modal */}
       <UserModal
