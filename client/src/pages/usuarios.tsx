@@ -29,8 +29,9 @@ const UsuariosPage: React.FC = () => {
   useEffect(() => {
     async function loadUsers() {
       const data = await fetchUsersBySector(); // Filtrar por sector 7000
-      setUsers(data);
-      setFilteredUsers(data);
+      const reversedData = data.reverse(); // Invierte el orden de los usuarios
+      setUsers(reversedData);
+      setFilteredUsers(reversedData);
       setLoading(false);
     }
     loadUsers();
@@ -42,7 +43,8 @@ const UsuariosPage: React.FC = () => {
       (user) =>
         user.usuario.toLowerCase().includes(search.toLowerCase()) &&
         (!estado || user.estado === estado)
-    );
+    )
+    //.reverse(); // Invierte el orden de los usuarios
     setFilteredUsers(filter);
   }, [search, estado, users]);
 
@@ -88,7 +90,7 @@ const UsuariosPage: React.FC = () => {
 
         // Agregar nuevo usuario
         const addedUser = await createUser(user);
-        const updatedUsers = [...users, addedUser];
+        const updatedUsers = [addedUser, ...users];
         setUsers(updatedUsers);
         setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
         toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });
