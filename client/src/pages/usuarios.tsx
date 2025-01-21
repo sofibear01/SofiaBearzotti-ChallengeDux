@@ -62,12 +62,12 @@ const UsuariosPage: React.FC = () => {
     try {
       // Obtener todos los usuarios
       const allUsers = await fetchAllUsers();
-  
+
       // Filtrar usuarios con datos incompletos
       const validUsers = allUsers.filter(
         (u) => u.sector !== null && u.usuario !== undefined && u.id !== undefined
       );
-  
+
       if (!selectedUser) {
         // Validar que el ID sea único al crear
         const idExists = validUsers.some((u) => u.id === user.id);
@@ -80,7 +80,7 @@ const UsuariosPage: React.FC = () => {
           });
           return;
         }
-  
+
         // Validar que el nombre de usuario sea único al crear
         const nameExists = validUsers.some(
           (u) => u.usuario.toLowerCase() === user.usuario.toLowerCase()
@@ -94,7 +94,7 @@ const UsuariosPage: React.FC = () => {
           });
           return;
         }
-  
+
         // Crear el usuario
         const addedUser = await createUser(user);
         const updatedUsers = [addedUser, ...users];
@@ -115,7 +115,7 @@ const UsuariosPage: React.FC = () => {
           });
           return;
         }
-  
+
         // Actualizar el usuario
         const updatedUser = await updateUser(user.id, user);
         const updatedUsers = users.map((u) => (u.id === selectedUser.id ? updatedUser : u));
@@ -123,7 +123,7 @@ const UsuariosPage: React.FC = () => {
         setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
         toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado correctamente', life: 3000 });
       }
-  
+
       closeModal();
     } catch (error) {
       console.error('Error al guardar el usuario:', error);
@@ -144,7 +144,7 @@ const UsuariosPage: React.FC = () => {
       }
     }
   };
-  
+
 
   const handleDeactivateUser = async (user: User) => {
     try {
@@ -231,6 +231,7 @@ const UsuariosPage: React.FC = () => {
             placeholder="Buscar"
             className="p-inputtext-sm"
           />
+
           {/* Filtro por estado */}
           <Dropdown
             value={estado}
@@ -241,6 +242,15 @@ const UsuariosPage: React.FC = () => {
           />
         </div>
 
+        {/* Botón para limpiar filtros */}
+        <Button
+          icon="pi pi-filter-slash"
+          className="p-button-outlined p-button-sm ml-2"
+          onClick={() => {
+            setSearch('');
+            setEstado(null);
+          }}
+        />
       </div>
 
       {/* Tabla */}

@@ -42,16 +42,16 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
   }, [userData]);
 
   const handleConfirm = () => {
-     // Validar que todos los campos estén completos
-  if (!id || !usuario || !estado || sector === null) {
-    toastRef.current?.show({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Todos los campos deben estar completos.',
-      life: 3000,
-    });
-    return;
-  }
+    // Validar que todos los campos estén completos
+    if (!id || !usuario || !estado || sector === null) {
+      toastRef.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Todos los campos deben estar completos.',
+        life: 3000,
+      });
+      return;
+    }
 
     onSubmit({
       id,
@@ -109,11 +109,12 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
         {/* Sector */}
         <div className="p-field mt-4">
           <label htmlFor="sector">Sector:</label>
-          <InputText
+          <Dropdown
             id="sector"
-            value={sector !== null ? sector.toString() : ''}
-            onChange={(e) => setSector(parseInt(e.target.value, 10))}
-            placeholder="Ingrese el sector del usuario"
+            value={sector}
+            options={[{ label: 'Sector 7000', value: 7000 }]} // Opciones
+            onChange={(e) => setSector(e.value)} // Actualizar estado
+            placeholder="Seleccione un sector"
           />
         </div>
       </div>
