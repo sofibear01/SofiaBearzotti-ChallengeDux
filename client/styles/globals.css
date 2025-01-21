@@ -9,3 +9,9 @@
 .rounded-button {
   border-radius: 12px; /* Ajusta este valor según tus necesidades */
 }
+
+.custom-dialog-header {
+  background-color: #0250ED; /* El mismo color azul que el header principal */
+  color: white;
+  padding: 0.5rem 1rem; /* Ajusta el padding para hacer el header más fino */
+}

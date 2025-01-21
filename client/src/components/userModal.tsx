@@ -60,24 +60,25 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
       header={userData ? 'Editar usuario' : 'Nuevo usuario'}
       visible={visible}
       onHide={onHide}
-      style={{ width: '40vw' }}
+      style={{ width: '50vw' }}
+      headerClassName="custom-dialog-header"
     >
       <div className="p-fluid">
         {/* ID */}
-        <div className="p-field">
-          <label htmlFor="id">ID</label>
+        <div className="p-field mt-4">
+          <label htmlFor="id">Id:</label>
           <InputText
             id="id"
             value={id}
             onChange={(e) => setId(e.target.value)}
-            placeholder="Ingrese el ID del usuario"
+            placeholder="Ingrese el id del usuario"
             readOnly={!!userData} // Solo lectura si es edición
           />
         </div>
 
         {/* Nombre */}
-        <div className="p-field">
-          <label htmlFor="usuario">Nombre</label>
+        <div className="p-field mt-4">
+          <label htmlFor="usuario">Nombre:</label>
           <InputText
             id="usuario"
             value={usuario}
@@ -87,8 +88,8 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
         </div>
 
         {/* Estado */}
-        <div className="p-field">
-          <label htmlFor="estado">Estado</label>
+        <div className="p-field mt-4">
+          <label htmlFor="estado">Estado:</label>
           <Dropdown
             id="estado"
             value={estado}
@@ -99,8 +100,8 @@ const UserModal: React.FC<UserModalProps> = ({ visible, onHide, onSubmit, userDa
         </div>
 
         {/* Sector */}
-        <div className="p-field">
-          <label htmlFor="sector">Sector</label>
+        <div className="p-field mt-4">
+          <label htmlFor="sector">Sector:</label>
           <InputText
             id="sector"
             value={sector !== null ? sector.toString() : ''}

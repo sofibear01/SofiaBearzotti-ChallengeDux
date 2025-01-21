@@ -9,6 +9,7 @@ import { User } from '@/types/user';
 import Header from '@/components/header';
 import UserList from '@/components/userList';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 const UsuariosPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -115,32 +116,32 @@ const UsuariosPage: React.FC = () => {
   };
 
   const handleDeactivateUser = async (user: User) => {
-      try {
-        const updatedUser: User = { ...user, estado: 'INACTIVO' };
-        await updateUser(user.id, updatedUser);
-        const updatedUsers = users.map((u) => (u.id === user.id ? updatedUser : u));
-        setUsers(updatedUsers);
-        setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
-        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario desactivado correctamente', life: 3000 });
-      } catch (error) {
-        console.error('Error al desactivar el usuario:', error);
-        toast.current?.show({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'No se pudo desactivar el usuario',
-          life: 3000,
-        });
-      }
-    };
-
-    const confirmDeactivateUser = (user: User) => {
-      confirmDialog({
-        message: '¿Está seguro que desea dar de baja este usuario?',
-        header: 'Confirmación',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => handleDeactivateUser(user),
+    try {
+      const updatedUser: User = { ...user, estado: 'INACTIVO' };
+      await updateUser(user.id, updatedUser);
+      const updatedUsers = users.map((u) => (u.id === user.id ? updatedUser : u));
+      setUsers(updatedUsers);
+      setFilteredUsers(updatedUsers.filter((user) => user.sector === 7000));
+      toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario desactivado correctamente', life: 3000 });
+    } catch (error) {
+      console.error('Error al desactivar el usuario:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo desactivar el usuario',
+        life: 3000,
       });
-    };
+    }
+  };
+
+  const confirmDeactivateUser = (user: User) => {
+    confirmDialog({
+      message: '¿Está seguro que desea dar de baja este usuario?',
+      header: 'Confirmación',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => handleDeactivateUser(user),
+    });
+  };
 
   const usuarioTemplate = (rowData: User) => {
     return (
@@ -161,8 +162,13 @@ const UsuariosPage: React.FC = () => {
     );
   };
 
+
   if (loading) {
-    return <p>Cargando usuarios...</p>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh' }}>
+        <ProgressSpinner />
+      </div>
+    );
   }
 
   return (
@@ -173,7 +179,7 @@ const UsuariosPage: React.FC = () => {
       <Header />
       <div className='flex justify-content-between align-items-center'>
         {/* Título alineado a la izquierda */}
-        <h1 className="text-2xl font-bold">Usuarios</h1>
+        <h1 className="text-3xl font-bold">Usuarios</h1>
 
         {/* Botón para agregar usuario alineado a la derecha */}
         <Button
@@ -206,8 +212,8 @@ const UsuariosPage: React.FC = () => {
 
       </div>
 
-       {/* Tabla */}
-       <UserList users={filteredUsers} usuarioTemplate={usuarioTemplate} actionTemplate={actionTemplate} />
+      {/* Tabla */}
+      <UserList users={filteredUsers} usuarioTemplate={usuarioTemplate} actionTemplate={actionTemplate} />
 
       {/* Modal */}
       <UserModal
